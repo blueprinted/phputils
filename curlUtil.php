@@ -300,9 +300,10 @@ class CurlUtil
      *          'msg' => 'succ', //String
      *          'data' => array(
      *              'response' => array(
-     *                  'head' => $head,
-     *                  'header' => $headers,
+     *                  'headLine' => $headLine,
+     *                  'headArr' => $headArr,
      *                  'cookie' => $cookies,
+     *                  'head' => $head,
      *                  'body' => $body
      *               ),
      *              'http_code' => 0,
@@ -506,9 +507,10 @@ class CurlUtil
      *  @param $response String 完整的http响应文本数据
      *  @return Array
      *        array(
-     *            'head' => array('v1', 'v2'), //不带key
-     *            'header' => array('k1' => 'v1', 'k2' => 'v2', ...), //key=>value结构
+     *            'headLine' => array('v1', 'v2'), //不带key
+     *            'headArr' => array('k1' => 'v1', 'k2' => 'v2', ...), //key=>value结构
      *            'cookie' => array(),
+     *            'head' => '', //文本形式的请求头 = headLine + headArr
      *            'body' => '',
      *        )
      */
