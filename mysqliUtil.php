@@ -1,6 +1,6 @@
 <?php
 /**
- *  mysqli 操作类(单列)
+ *  mysqliUtil 操作类(单列)
  *
  */
 
@@ -96,7 +96,7 @@ class mysqliUtil
         return $this->init_connect() ? (mysqli_select_db($dbname, $this->link)?(boolean)($this->dbname=$dbname):false) : false;
     }
 
-    public function fetch_array($query, $result_type = MYSQL_ASSOC)
+    public function fetch_array($query, $result_type = MYSQLI_ASSOC)
     {
         return mysqli_fetch_array($query, $result_type);
     }
@@ -132,7 +132,8 @@ class mysqliUtil
 
     public function result($query, $row, $field = 0)
     {
-        return mysqli_result($query, $row, $field);
+        $array = mysqli_fetch_array($query, MYSQLI_NUM);
+        return isset($array[$field]) ? $array[$field] : null;
     }
 
     public function num_rows($query)
@@ -166,7 +167,7 @@ class mysqliUtil
         return mysqli_fetch_field($query);
     }
 
-    public function fetch_all($query, $result_type = MYSQL_ASSOC)
+    public function fetch_all($query, $result_type = MYSQLI_ASSOC)
     {
         $rows = array();
         if (!$this->init_connect()) {
@@ -239,10 +240,8 @@ class mysqliUtil
         $info = "<div style=\"position:absolute;font-size:11px;font-family:verdana,arial;background:#EBEBEB;padding:0.5em;\">";
         $info .= "<b>MySQL Error</b><br>";
         $info .= "<b>Message</b>: $message<br>";
-        if (!PRODUCT_MODEL) {
-            $info .= "<b>SQL</b>: $sql<br>";
-            $info .= "<b>Error</b>: $dberror<br>";
-        }
+        $info .= "<b>SQL</b>: $sql<br>";
+        $info .= "<b>Error</b>: $dberror<br>";
         $info .= "<b>Errno.</b>: $dberrno<br>";
         $info .= "</div>";
         echo $info;
