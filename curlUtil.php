@@ -197,7 +197,7 @@ Proxy-Connection: Keep-alive
 {"uid":0,"nickname":"","headimgurl":""}
 */
 
-class CurlUtil
+class curlUtil
 {
     private static $instance = null;
     protected static $options = array();
