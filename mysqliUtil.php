@@ -32,7 +32,7 @@ class mysqliUtil
     /**
      *  @return Array
      */
-    public function get_conf()
+    protected function get_conf()
     {
         $args = func_get_args();
         $conf = @array_shift($args);
@@ -240,8 +240,10 @@ class mysqliUtil
         $info = "<div style=\"position:absolute;font-size:11px;font-family:verdana,arial;background:#EBEBEB;padding:0.5em;\">";
         $info .= "<b>MySQL Error</b><br>";
         $info .= "<b>Message</b>: $message<br>";
-        $info .= "<b>SQL</b>: $sql<br>";
-        $info .= "<b>Error</b>: $dberror<br>";
+        if (true || !PRODUCT_MODEL) { //脚本环境下开启详情
+            $info .= "<b>SQL</b>: $sql<br>";
+            $info .= "<b>Error</b>: $dberror<br>";
+        }
         $info .= "<b>Errno.</b>: $dberrno<br>";
         $info .= "</div>";
         echo $info;
