@@ -122,12 +122,12 @@ class mysqliUtil
 
     public function error()
     {
-        return $this->link ? mysqli_error($this->link) : mysqli_error();
+        return $this->link ? mysqli_error($this->link) : '';
     }
 
     public function errno()
     {
-        return intval(($this->link) ? mysqli_errno($this->link) : mysqli_errno());
+        return $this->link ? mysqli_errno($this->link) : 0;
     }
 
     public function result($query, $row, $field = 0)
@@ -240,7 +240,7 @@ class mysqliUtil
         $info = "<div style=\"position:absolute;font-size:11px;font-family:verdana,arial;background:#EBEBEB;padding:0.5em;\">";
         $info .= "<b>MySQL Error</b><br>";
         $info .= "<b>Message</b>: $message<br>";
-        if (true || !PRODUCT_MODEL) { //脚本环境下开启详情
+        if (true) { //脚本环境下开启详情
             $info .= "<b>SQL</b>: $sql<br>";
             $info .= "<b>Error</b>: $dberror<br>";
         }
