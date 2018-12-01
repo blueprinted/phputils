@@ -3,10 +3,8 @@
  *  curl实现http请求类
  *  @date 2018-08-29 15:55:02
  */
-
 /*
 curl的选项参数
-
 // boolean options
 CURLOPT_AUTOREFERER                                //TRUE 时将根据 Location: 重定向时，自动设置 header 中的Referer:信息。
 CURLOPT_BINARYTRANSFER                             //设为 TRUE ，将在启用 CURLOPT_RETURNTRANSFER 时，返回原生的（Raw）输出。从 PHP 5.1.3 开始，此选项不再有效果：使用 CURLOPT_RETURNTRANSFER 后总是会返回原生的（Raw）内容。
@@ -53,7 +51,6 @@ CURLOPT_TFTP_NO_OPTIONS                            //TRUE 不发送 TFTP 的 opt
 CURLOPT_UNRESTRICTED_AUTH                          //TRUE 在使用CURLOPT_FOLLOWLOCATION重定向 header 中的多个 location 时继续发送用户名和密码信息，哪怕主机名已改变。
 CURLOPT_UPLOAD                                     //TRUE 准备上传。
 CURLOPT_VERBOSE                                    //TRUE 会输出所有的信息，写入到STDERR，或在CURLOPT_STDERR中指定的文件。
-
 // integer options
 CURLOPT_BUFFERSIZE                                 //每次读入的缓冲的尺寸。当然不保证每次都会完全填满这个尺寸。在cURL 7.10中被加入。
 CURLOPT_CLOSEPOLICY                                //CURLCLOSEPOLICY_* 中的一个。Note:此选项已被废弃，它不会被实现，永远不会有效果啦。PHP 5.6.0 中移除。
@@ -91,7 +88,6 @@ CURLOPT_MAX_SEND_SPEED_LARGE                       //如果上传的速度超过
 CURLOPT_SSH_AUTH_TYPES                             //A bitmask consisting of one or more of CURLSSH_AUTH_PUBLICKEY, CURLSSH_AUTH_PASSWORD, CURLSSH_AUTH_HOST, CURLSSH_AUTH_KEYBOARD. Set to CURLSSH_AUTH_ANY to let libcurl pick one.   cURL 7.16.1 中添加。
 CURLOPT_IPRESOLVE                                  //允许程序选择想要解析的 IP 地址类别。只有在地址有多种 ip 类别的时候才能用，可以的值有： CURL_IPRESOLVE_WHATEVER、 CURL_IPRESOLVE_V4、 CURL_IPRESOLVE_V6，默认是 CURL_IPRESOLVE_WHATEVER。 cURL 7.10.8 中添加。
 CURLOPT_FTP_FILEMETHOD                             //告诉 curl 使用哪种方式来获取 FTP(s) 服务器上的文件。可能的值有： CURLFTPMETHOD_MULTICWD、 CURLFTPMETHOD_NOCWD 和 CURLFTPMETHOD_SINGLECWD。 cURL 7.15.1 中添加， PHP 5.3.0 起有效。
-
 // string options
 CURLOPT_CAINFO                                     //一个保存着1个或多个用来让服务端验证的证书的文件名。这个参数仅仅在和CURLOPT_SSL_VERIFYPEER一起使用时才有意义。 .   可能需要绝对路径。
 CURLOPT_CAPATH                                     //一个保存着多个CA证书的目录。这个选项是和CURLOPT_SSL_VERIFYPEER一起使用的。
@@ -138,7 +134,6 @@ CURLOPT_USERAGENT                                  //在HTTP请求中包含一�
 CURLOPT_USERNAME                                   //验证中使用的用户名。cURL 7.19.1 中添加，PHP 5.5.0 起有效。
 CURLOPT_USERPWD                                    //传递一个连接中需要的用户名和密码，格式为："[username]:[password]"。
 CURLOPT_XOAUTH2_BEARER                             //指定 OAuth 2.0 access token。 cURL 7.33.0 中添加，自 PHP 7.0.7 添加。
-
 // array options
 CURLOPT_CONNECT_TO                                 //连接到指定的主机和端口，替换 URL 中的主机和端口。接受指定字符串格式的数组： HOST:PORT:CONNECT-TO-HOST:CONNECT-TO-PORT。    cURL 7.49.0 中添加， PHP 7.0.7 起有效。
 CURLOPT_HTTP200ALIASES                             //HTTP 200 响应码数组，数组中的响应码被认为是正确的响应，而非错误。在 cURL 7.10.3 中被加入。
@@ -147,13 +142,11 @@ CURLOPT_POSTQUOTE                                  //在 FTP 请求执行完成�
 CURLOPT_PROXYHEADER                                //传给代理的自定义 HTTP 头。   cURL 7.37.0 中添加，自 PHP 7.0.7 添加。
 CURLOPT_QUOTE                                      //一组先于 FTP 请求的在服务器上执行的FTP命令。
 CURLOPT_RESOLVE                                    //提供自定义地址，指定了主机和端口。 包含主机、端口和 ip 地址的字符串，组成 array 的，每个元素以冒号分隔。格式： array("example.com:80:127.0.0.1")    在 cURL 7.21.3 中添加，自 PHP 5.5.0 起可用。
-
 // stream resource options
 CURLOPT_FILE                                       //设置输出文件，默认为STDOUT (浏览器)。
 CURLOPT_INFILE                                     //上传文件时需要读取的文件。
 CURLOPT_STDERR                                     //错误输出的地址，取代默认的STDERR。
 CURLOPT_WRITEHEADER                                //设置 header 部分内容的写入的文件地址。
-
 // function or callback options
 CURLOPT_HEADERFUNCTION                             //设置一个回调函数，这个函数有两个参数，第一个是cURL的资源句柄，第二个是输出的 header 数据。header数据的输出必须依赖这个函数，返回已写入的数据大小。
 CURLOPT_PASSWDFUNCTION                             //设置一个回调函数，有三个参数，第一个是cURL的资源句柄，第二个是一个密码提示符，第三个参数是密码长度允许的最大值。返回密码的值。
@@ -161,7 +154,6 @@ CURLOPT_PROGRESSFUNCTION                           //设置一个回调函数，
 CURLOPT_READFUNCTION                               //回调函数名。该函数应接受三个参数。第一个是 cURL resource；第二个是通过选项 CURLOPT_INFILE 传给 cURL 的 stream resource；第三个参数是最大可以读取的数据的数量。回 调函数必须返回一个字符串，长度小于或等于请求的数据量（第三个参数）。一般从传入的 stream resource 读取。返回空字符串作为 EOF（文件结束） 信号。
 CURLOPT_WRITEFUNCTION                              //回调函数名。该函数应接受两个参数。第一个是 cURL resource；第二个是要写入的数据字符串。数 据必须在函数中被保存。 函数必须准确返回写入数据的字节数，否则传输会被一个错误所中 断。
 */
-
 //一个完整的http请求数据示例：
 //GET /sapp/designhjy/ HTTP/1.1
 //Host: shouji.sogou.com
@@ -175,7 +167,6 @@ CURLOPT_WRITEFUNCTION                              //回调函数名。该函数
 //If-Modified-Since: Thu, 26 Jul 2018 05:31:53 GMT
 //
 //
-
 /*
 一个完整的http响应数据示例：
 HTTP/1.1 200 OK
@@ -193,10 +184,8 @@ Set-Cookie: nickname=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; 
 Set-Cookie: storage=deleted; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/; domain=.shouji.sogou.com
 Transfer-Encoding: chunked
 Proxy-Connection: Keep-alive
-
 {"uid":0,"nickname":"","headimgurl":""}
 */
-
 class curlUtil
 {
     private static $instance = null;
@@ -204,7 +193,6 @@ class curlUtil
     protected static $response = null;
     protected static $responseHead = null;
     protected static $responseBody = null;
-
     protected static $defaultOpts = array(
         'method' => 'get',
         'cookie' => false,
@@ -232,20 +220,16 @@ class curlUtil
         CURLOPT_COOKIEFILE,
         CURLOPT_COOKIEJAR,
     );
-
     public function __construct($options = array())
     {
           self::setOptions($options);
     }
-
     private function __clone()
     {
     }
-
     public function __destruct()
     {
     }
-
     public static function getInstance($options = array())
     {
         if (!isset(self::$instance)) {
@@ -253,7 +237,6 @@ class curlUtil
         }
         return self::$instance;
     }
-
     /**
      *  设置选项
          *  $options array
@@ -271,7 +254,6 @@ class curlUtil
         if (empty(self::$options)) {
             self::$options = self::$defaultOpts;
         }
-
         //数字下标的array不能merge，否则下标会从0开始计
         $defaultCurlopts = self::$options['curlopts'];
         $curlopts = isset($options['curlopts']) ? $options['curlopts'] : array();
@@ -283,13 +265,10 @@ class curlUtil
         if (!isset($curlopts[CURLOPT_USERAGENT]) && isset($_SERVER['HTTP_USER_AGENT'])) {
             $defaultCurlopts[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
         }
-
         self::$options = array_merge(self::$options, $options);
         self::$options['curlopts'] = $defaultCurlopts;
-
         return self::$options;
     }
-
     /**
      *  http get 方法
      *  @param $url String
@@ -324,7 +303,6 @@ class curlUtil
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
     }
-
         /**
      *  http post 方法
      *  @param $url String
@@ -343,7 +321,6 @@ class curlUtil
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
     }
-
         /**
      *  http head 方法
      *  @param $url String
@@ -361,7 +338,6 @@ class curlUtil
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
     }
-
         /**
      *  http put 方法
      *  @param $url String
@@ -379,7 +355,6 @@ class curlUtil
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
     }
-
         /**
      *  http delete 方法
      *  @param $url String
@@ -397,7 +372,6 @@ class curlUtil
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
     }
-
     /**
      *  执行curl模拟的http请求
      *  @param $url String 请求的url地址
@@ -429,10 +403,8 @@ class curlUtil
                 'curl_info' => array(),
             ),
         );
-
         $opts = self::setOptions($opts);
         $curl_options = isset($opts['curlopts']) ? $opts['curlopts'] : array();
-
         $ch = curl_init();
         if ($ch === false) {
             $resu['code'] = 1;
@@ -473,9 +445,13 @@ class curlUtil
             curl_setopt($ch, CURLOPT_COOKIEJAR, $opts['cookie']);//存储cookies
         }
         if (false === ($resp = curl_exec($ch))) {
+            $curl_errno = curl_errno($ch);
+            $curl_error = curl_error($ch);
             curl_close($ch);
             $resu['code'] = 2;
             $resu['msg'] = 'curl_exec fail';
+            $resu['data']['curl_errno'] = $curl_errno;
+            $resu['data']['curl_error'] = $curl_error;
             return $resu;
         }
         $resu['data']['response'] = $resp;
@@ -498,10 +474,8 @@ class curlUtil
         $resu['data']['http_code'] = $curl_info['http_code'];
         $resu['data']['curl_info'] = $curl_info;
         curl_close($ch);
-
         return $resu;
     }
-
     /**
      *  解析 request 方法的返回结果中的 array['data']['response']
      *  @param $response String 完整的http响应文本数据
@@ -527,7 +501,6 @@ class curlUtil
               $head = '';
               $body = $response;
         }
-
         $headLine = $headArr = $cookies = array();
         if (self::$options['getHeader'] && self::$options['parseRespHead']) {
                 $headerLines = explode("\r\n", $head);
@@ -558,7 +531,6 @@ class curlUtil
             'body' => $body
         );
     }
-
     /**
      *  获取http响应数据的响应头文本信息 多次重定向会包含多个响应头 这里获取全部响应头
      *  @param $response String 完整的http响应文本数据（包含 状态行, 响应head, 响应body）
@@ -576,7 +548,6 @@ class curlUtil
             return substr($response, 0, $pos);
         }
     }
-
     /**
      * [appendUrlArgs 追加url的get参数]
      * @param  String $url
