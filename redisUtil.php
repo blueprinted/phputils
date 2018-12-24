@@ -108,9 +108,30 @@ class redisUtil
     }
 
     /**
+     *    redis setOption
+     *    @param $optKey String 要设置的key
+     *    @param $optValue String 要设置的value
+     *    @return Boolean
+     */
+    public function setOption($optKey, $optValue) {
+        return $this->redis ? $this->redis->setOption($optKey, $optValue) : false;
+    }
+
+    /**
+     *    redis scan
+     *    @param $iterator String LONG (reference): Iterator, initialized to NULL STRING
+     *    @param $pattern String Pattern to match LONG
+     *    @param $count Integer  Count of keys per iteration (only a suggestion to Redis)
+     *    @return Array / Boolean
+     */
+    public function scan(&$iterator, $pattern = '*', $count = 0) {
+        return $this->redis ? $this->redis->scan($iterator, $pattern, $count) : false;
+    }
+
+    /**
      *  redis exists
      *  @param $key String 检查的key
-     *  @paeam $md5key Boolean 是否先md5(key)再exists [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再exists [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function exists($key, $md5key = false)
@@ -127,7 +148,7 @@ class redisUtil
      *  @param $key String 要set的key
      *  @param $value Mixed 要set的value
      *  @param $serialize Boolean 是否先序列化value再set [true:是,false:否] 缺省false
-     *  @paeam $md5key Boolean 是否先md5(key)再set [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再set [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function set($key, $value, $serialize = false, $md5key = false)
@@ -145,7 +166,7 @@ class redisUtil
      *  @param $expire Integer 过期时间
      *  @param $value Mixed 要set的value
      *  @param $serialize Boolean 是否先序列化value再set [true:是,false:否] 缺省false
-     *  @paeam $md5key Boolean 是否先md5(key)再set [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再set [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function setex($key, $expire, $value, $serialize = false, $md5key = false)
@@ -161,7 +182,7 @@ class redisUtil
      *  redis get
      *  @param $key String 要get的key
      *  @param $unserialize Boolean 是否对get的值反序列化 [true:是,false:否] 缺省false
-     *  @paeam $md5key Boolean 是否先md5(key)再get [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再get [true:是,false:否] 缺省false
      *  @return Mixed 失败返回false
      */
     public function get($key, $unserialize = false, $md5key = false)
@@ -176,7 +197,7 @@ class redisUtil
     /**
      *  redis delete
      *  @param $key String 要delete的key
-     *  @paeam $md5key Boolean 是否先md5(key)再delete [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再delete [true:是,false:否] 缺省false
      *  @return Integer/Boolean(false)
      */
     public function delete($key, $md5key = false)
@@ -192,7 +213,7 @@ class redisUtil
      *  获取指定的(1个或多个)键的值
      *  @param $keys Array 要获取的keys 如 array('key1', 'key2')
      *  @param $unserialize Boolean 是否对getMultiple的值反序列化 [true:是,false:否] 缺省true
-     *  @paeam $md5key Boolean 是否先md5(key)再getMultiple [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再getMultiple [true:是,false:否] 缺省false
      *  @return Array
      */
     public function getMultiple($keys, $unserialize = true, $md5key = false)
@@ -217,7 +238,7 @@ class redisUtil
     /**
      *  key值自增
      *  @param $key String 要自增的key
-     *  @paeam $md5key Boolean 是否先md5(key)再incr [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再incr [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function incr($key, $md5key = false)
@@ -236,7 +257,7 @@ class redisUtil
      *  key值自增
      *  @param $key String 要自增的key
      *  @param $inc Integer 自增的量 缺省1
-     *  @paeam $md5key Boolean 是否先md5(key)再incrBy [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再incrBy [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function incrBy($key, $inc = 1, $md5key = false)
@@ -254,7 +275,7 @@ class redisUtil
     /**
      *  key值自减
      *  @param $key String 要自减的key
-     *  @paeam $md5key Boolean 是否先md5(key)再decr [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再decr [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function decr($key, $md5key = false)
@@ -273,7 +294,7 @@ class redisUtil
      *  key值自减
      *  @param $key String 要自增的key
      *  @param $dec Integer 自减的量 缺省1
-     *  @paeam $md5key Boolean 是否先md5(key)再decrBy [true:是,false:否] 缺省false
+     *  @param $md5key Boolean 是否先md5(key)再decrBy [true:是,false:否] 缺省false
      *  @return Boolean
      */
     public function decrBy($key, $dec = 1, $md5key = false)
