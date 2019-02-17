@@ -82,6 +82,15 @@ class mysqliUtil
         return $this->link;
     }
 
+    //mysqli重连 返回连接标识
+	public function reconnect() {
+		if ($this->link) {
+			$this->close();
+			return $this->init_connect();
+		}
+		return null;
+	}
+
     public function init_connect()
     {
         global $_DBCFG;
@@ -296,5 +305,13 @@ class mysqliUtil
             $sql = $sql_head . " " . $sql;
         }
         return $sql;
+    }
+
+    /*
+	 * ping 连接
+     * 原生mysqli_ping()返回boolean
+	 * */
+	public function ping(){
+        return $this->init_connect() ? (@mysqli_ping($this->link)) : false;
     }
 }
