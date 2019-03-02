@@ -245,7 +245,7 @@ class curlUtil
          *      'cookie' => Boolean(false)/String, // false表示不启用cookie, 或者填cookie文件的绝对路径,
          *      'headers' => Array(), // 一个用来设置HTTP头字段的数组。使用如下的形式的数组进行设置： array('Content-type: text/plain', 'Content-length: 100')
          *      'curlopts' => array(), // curl的 options 选项数组 如 array(CURLOPT_RETURNTRANSFER => true, ...)
-                 *      'parseRespHead' => Boolean,
+         *      'parseRespHead' => Boolean,
          *      'getHeader' => Boolean,
          *  )
      */
@@ -423,6 +423,9 @@ class curlUtil
             curl_setopt($ch, CURLOPT_HEADER, true);
         } else {
             curl_setopt($ch, CURLOPT_HEADER, false);
+        }
+        if(!empty($opts['headers'])) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $opts['headers']);
         }
         if ($opts['method'] == 'GET') {
             curl_setopt($ch, CURLOPT_HTTPGET, true);
