@@ -124,6 +124,35 @@ class mysqliUtil
         return $query;
     }
 
+    /** 防止 sql 注入的sql执行方法 可以执行各类型的sql操作
+     * @param $sql 需要预处理的sql
+     * @param $types String  i:整型  d:double  s:string  b:blob 这几个字符的组合 与 ...$args对应的数据字段的类型对应
+     * @param ...$args 多参数
+     * @return Boolean / resuorce true/false
+     * @mysqli_stmt_bind_param()
+     */
+    public function stmt_query($sql, $types, ...$args)
+    {
+        if (!$this->init_connect()) {
+            return false;
+        }
+        //mysqli_prepare() returns a statement object or FALSE if an error occurred.
+        if (false === ($stmt = mysqli_prepare($this->link, $sql))) {
+            return false;
+        }
+        if (!mysqli_stmt_bind_param($stmt, $types, ...$args)) { //该函数的参数是引用传递 Returns TRUE on success or FALSE on failure.//该函数的参数是引用传递 Returns TRUE on success or FALSE on failure.
+            return false;
+        }
+        $re = mysqli_stmt_execute($stmt); //成功时返回 TRUE 或者在失败时返回 FALSE。
+        if (strtolower(substr($sql, 0, 6)) != 'select') {
+            mysqli_stmt_close($stmt);
+            return $ret;
+        }
+        $re = mysqli_stmt_get_result($stmt);
+        mysqli_stmt_close($stmt);
+        return $re;
+    }
+
     public function affected_rows()
     {
         return $this->init_connect() ? mysqli_affected_rows($this->link) : -1;
@@ -306,6 +335,8 @@ class mysqliUtil
         }
         return $sql;
     }
+
+
 
     /*
 	 * ping 连接
