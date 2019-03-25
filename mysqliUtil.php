@@ -146,7 +146,7 @@ class mysqliUtil
         $re = mysqli_stmt_execute($stmt); //成功时返回 TRUE 或者在失败时返回 FALSE。
         if (strtolower(substr($sql, 0, 6)) != 'select') {
             mysqli_stmt_close($stmt);
-            return $ret;
+            return $re;
         }
         $re = mysqli_stmt_get_result($stmt);
         mysqli_stmt_close($stmt);
