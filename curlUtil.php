@@ -437,7 +437,9 @@ class curlUtil
         } elseif ($opts['method'] == 'DELETE') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
         } elseif ($opts['method'] == 'HEAD') {
+            curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
++           curl_setopt($ch, CURLOPT_NOBODY, true);
         } else {
             curl_setopt($ch, CURLOPT_HTTPGET, true);
         }
