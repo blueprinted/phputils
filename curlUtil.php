@@ -544,14 +544,22 @@ class curlUtil
      */
     protected static function getResponseHeader($response, $pos = 0)
     {
-        if (false !== stripos($response, "\r\n\r\nHTTP/1.1 ", $pos)) {//表明有多个响应状态行
-            return self::getResponseHeader($response, strpos($response, "\r\n\r\n")+4);
-        } else {
-            if (false === ($pos = strpos($response, "\r\n\r\n", $pos))) {
-                return $response;
+        //if (false !== stripos($response, "\r\n\r\nHTTP/1.1 ", $pos)) {//表明有多个响应状态行
+        if (false !== ($tmpPos = stripos($response, "\r\n\r\nHTTP/", $pos))) {//表明可能有多个响应状态行
+            if (false !== ($nextCrlfPos = strpos($response, "\r\n", $tmpPos+4))) {
+                $line = substr($response, $tmpPos+4, $nextCrlfPos-($tmpPos+4));
+                // HTTP/1.1 302 Found
+                // HTTP/1.1 302 Moved Temporarily
+                //if (preg_match('/^http\/[\d\.]+ \d+ \S+$/i', $line)) {
+                if (preg_match('/^http\/[\d\.]+\s+\d+\s+[\s\S]+$/i', $line)) {
+                    return self::getResponseHeader($response, $tmpPos+4);
+                }
             }
-            return substr($response, 0, $pos);
         }
+        if (false === ($pos = strpos($response, "\r\n\r\n", $pos))) {
+            return $response;
+        }
+        return substr($response, 0, $pos);
     }
     /**
      * [appendUrlArgs 追加url的get参数]
