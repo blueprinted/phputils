@@ -592,7 +592,7 @@ class curlUtil
     }
 
     /**
-     * curl_multi方法
+     * curl_multi方法 参考资料:https://www.cnblogs.com/52fhy/p/8908315.html
      * @param  Array $configs
      *     array(
      *         0 => array(
