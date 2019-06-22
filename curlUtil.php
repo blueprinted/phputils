@@ -190,9 +190,6 @@ class curlUtil
 {
     private static $instance = null;
     protected static $options = array();
-    protected static $response = null;
-    protected static $responseHead = null;
-    protected static $responseBody = null;
     protected static $defaultOpts = array(
         'method' => 'get',
         'cookie' => false,
@@ -208,7 +205,7 @@ class curlUtil
             CURLOPT_SSL_VERIFYHOST => 0,            //https请求 不验证证书和hosts
             CURLOPT_USERAGENT => 'icurl-1.0.0',
         ),
-                'parseRespHead' => true,                    //是否解析响应头
+        'parseRespHead' => true,                    //是否解析响应头
         'getHeader' => true,                        //是否获取http的响应头
     );
     protected static $fixedOpts = array(
@@ -239,22 +236,23 @@ class curlUtil
     }
     /**
      *  设置选项
-         *  $options array
-         *  array(
-         *      'method' => String, // get/post/put/head/delete
-         *      'cookie' => Boolean(false)/String, // false表示不启用cookie, 或者填cookie文件的绝对路径,
-         *      'headers' => Array(), // 一个用来设置HTTP头字段的数组。使用如下的形式的数组进行设置： array('Content-type: text/plain', 'Content-length: 100')
-         *      'curlopts' => array(), // curl的 options 选项数组 如 array(CURLOPT_RETURNTRANSFER => true, ...)
-         *      'parseRespHead' => Boolean,
-         *      'getHeader' => Boolean,
-         *  )
+     *  @param $options array
+     *      array(
+     *          'method' => String, // get/post/put/head/delete
+     *          'cookie' => Boolean(false)/String, // false表示不启用cookie, 或者填cookie文件的绝对路径,
+     *          'headers' => Array(), // 一个用来设置HTTP头字段的数组。使用如下的形式的数组进行设置： array('Content-type: text/plain', 'Content-length: 100')
+     *          'curlopts' => array(), // curl的 options 选项数组 如 array(CURLOPT_RETURNTRANSFER => true, ...)
+     *          'parseRespHead' => Boolean,
+     *          'getHeader' => Boolean,
+     *      )
+     * @return Array
      */
     private static function setOptions($options = array())
     {
         if (empty(self::$options)) {
             self::$options = self::$defaultOpts;
         }
-        //数字下标的array不能merge，否则下标会从0开始计
+        // 数字下标的array不能merge，否则下标会从0开始计
         $defaultCurlopts = self::$options['curlopts'];
         $curlopts = isset($options['curlopts']) ? $options['curlopts'] : array();
         foreach ($curlopts as $key => $value) {
@@ -265,9 +263,68 @@ class curlUtil
         if (!isset($curlopts[CURLOPT_USERAGENT]) && isset($_SERVER['HTTP_USER_AGENT'])) {
             $defaultCurlopts[CURLOPT_USERAGENT] = $_SERVER['HTTP_USER_AGENT'];
         }
-        self::$options = array_merge(self::$options, $options);
+        self::$options = array_merge(self::$options, $options); // overwrite default options
         self::$options['curlopts'] = $defaultCurlopts;
         return self::$options;
+    }
+    /**
+     *  设置curl的opt
+     *  @param $ch Resource curl_init() 的句柄
+     *  @param $url String 请求的url地址
+     *  @param $args Array/String get或post或其他请求的参数
+     *  @param $opts Array 选项 参看 setOptions 方法的参数值结构
+     *      array(
+     *          'method' => String, // get/post/put/head/delete
+     *          'cookie' => Boolean(false)/String, // false表示不启用cookie, 或者填cookie文件的绝对路径,
+     *          'headers' => Array(), // 一个用来设置HTTP头字段的数组。使用如下的形式的数组进行设置： array('Content-type: text/plain', 'Content-length: 100')
+     *          'curlopts' => array(), // curl的 options 选项数组 如 array(CURLOPT_RETURNTRANSFER => true, ...)
+     *          'parseRespHead' => Boolean,
+     *          'getHeader' => Boolean,
+     *      )
+     *  @return Array
+     */
+    protected static function curlSetopt($ch, $url, $args, $opts) {
+        $opts = self::setOptions($opts);
+        $curl_options = isset($opts['curlopts']) ? $opts['curlopts'] : array();
+        $opts['method'] = strtoupper($opts['method']);
+        if ($opts['method'] == 'GET') {
+            $url = self::appendUrlArgs($url, $args);
+        }
+        curl_setopt($ch, CURLOPT_URL, $url);
+        if ($curl_options) {
+            curl_setopt_array($ch, $curl_options);
+        }
+        if ($opts['getHeader']) {
+            curl_setopt($ch, CURLOPT_HEADER, true);
+        } else {
+            curl_setopt($ch, CURLOPT_HEADER, false);
+        }
+        if(!empty($opts['headers'])) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $opts['headers']);
+        }
+        if ($opts['method'] == 'GET') {
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+        } elseif ($opts['method'] == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, (is_string($args) ? $args : http_build_query($args)));
+        } elseif ($opts['method'] == 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        } elseif ($opts['method'] == 'DELETE') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        } elseif ($opts['method'] == 'HEAD') {
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+        } else {
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+        }
+        if ($opts['cookie'] !== false) {
+            if (file_exists($opts['cookie'])) {
+                curl_setopt($ch, CURLOPT_COOKIEFILE, $opts['cookie']); //附加cookies
+            }
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $opts['cookie']);//存储cookies
+        }
+        return $opts;
     }
     /**
      *  http get 方法
@@ -297,8 +354,8 @@ class curlUtil
         $opts['method'] = 'GET';
         $resu = self::request($url, array(), $opts);
         if ($resu['code'] != 0) {
-              $resu['data']['response'] = array();
-              return $resu;
+            $resu['data']['response'] = array();
+            return $resu;
         }
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
@@ -306,7 +363,7 @@ class curlUtil
         /**
      *  http post 方法
      *  @param $url String
-         *  @param $postArgs Array/String
+     *  @param $postArgs Array/String
      *  @param $opts Array 选项 参看 setOptions 方法的参数值结构
      *  @return Array 参看 get 的返回值
     */
@@ -315,8 +372,8 @@ class curlUtil
         $opts['method'] = 'POST';
         $resu = self::request($url, $postArgs, $opts);
         if ($resu['code'] != 0) {
-              $resu['data']['response'] = array();
-              return $resu;
+            $resu['data']['response'] = array();
+             return $resu;
         }
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
@@ -332,8 +389,8 @@ class curlUtil
         $opts['method'] = 'HEAD';
         $resu = self::request($url, array(), $opts);
         if ($resu['code'] != 0) {
-              $resu['data']['response'] = array();
-              return $resu;
+            $resu['data']['response'] = array();
+            return $resu;
         }
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
@@ -349,8 +406,8 @@ class curlUtil
         $opts['method'] = 'PUT';
         $resu = self::request($url, array(), $opts);
         if ($resu['code'] != 0) {
-              $resu['data']['response'] = array();
-              return $resu;
+            $resu['data']['response'] = array();
+            return $resu;
         }
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
@@ -366,8 +423,8 @@ class curlUtil
         $opts['method'] = 'DELETE';
         $resu = self::request($url, array(), $opts);
         if ($resu['code'] != 0) {
-              $resu['data']['response'] = array();
-              return $resu;
+            $resu['data']['response'] = array();
+            return $resu;
         }
         $resu['data']['response'] = self::parseResponse($resu['data']['response']);
         return $resu;
@@ -382,7 +439,7 @@ class curlUtil
      *          'code' => 0, //Integer
      *          'msg' => 'succ', //String
      *          'data' => array(
-     *              'response' => '', // 有可能只有body数据, 有可能会有完整的响应数据, 视 curl_opts 的 CURLOPT_HEADER 参数而定
+     *              'response' => array(), // 有可能只有body数据, 有可能会有完整的响应数据, 视 curl_opts 的 CURLOPT_HEADER 参数而定
      *              'http_code' => 0,
      *              'curl_errno' => 0,
      *              'curl_error' => '',
@@ -396,59 +453,20 @@ class curlUtil
             'code' => 0,
             'msg' => 'succ',
             'data' => array(
-                'response' => '',
+                'response' => array(),
                 'http_code' => 0,
                 'curl_errno' => 0,
                 'curl_error' => '',
                 'curl_info' => array(),
             ),
         );
-        $opts = self::setOptions($opts);
-        $curl_options = isset($opts['curlopts']) ? $opts['curlopts'] : array();
         $ch = curl_init();
         if ($ch === false) {
             $resu['code'] = 1;
             $resu['msg'] = 'curl_init fail';
             return $resu;
         }
-        $opts['method'] = strtoupper($opts['method']);
-        if ($opts['method'] == 'GET') {
-            $url = self::appendUrlArgs($url, $args);
-        }
-        curl_setopt($ch, CURLOPT_URL, $url);
-        if ($curl_options) {
-            curl_setopt_array($ch, $curl_options);
-        }
-        if ($opts['getHeader']) {
-            curl_setopt($ch, CURLOPT_HEADER, true);
-        } else {
-            curl_setopt($ch, CURLOPT_HEADER, false);
-        }
-        if(!empty($opts['headers'])) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $opts['headers']);
-        }
-        if ($opts['method'] == 'GET') {
-            curl_setopt($ch, CURLOPT_HTTPGET, true);
-        } elseif ($opts['method'] == 'POST') {
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, (is_string($args) ? $args : http_build_query($args)));
-        } elseif ($opts['method'] == 'PUT') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        } elseif ($opts['method'] == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        } elseif ($opts['method'] == 'HEAD') {
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'HEAD');
-+           curl_setopt($ch, CURLOPT_NOBODY, true);
-        } else {
-            curl_setopt($ch, CURLOPT_HTTPGET, true);
-        }
-        if ($opts['cookie'] !== false) {
-            if (file_exists($opts['cookie'])) {
-                curl_setopt($ch, CURLOPT_COOKIEFILE, $opts['cookie']); //附加cookies
-            }
-            curl_setopt($ch, CURLOPT_COOKIEJAR, $opts['cookie']);//存储cookies
-        }
+        $opts = self::curlSetopt($ch, $url, $args, $opts);
         if (false === ($resp = curl_exec($ch))) {
             $curl_errno = curl_errno($ch);
             $curl_error = curl_error($ch);
@@ -460,19 +478,14 @@ class curlUtil
             return $resu;
         }
         $resu['data']['response'] = $resp;
-        if ($opts['getHeader']) {
-            self::$response = $resp;
-        } else {
-            self::$responseBody = $resp;
-        }
         $curl_errno = curl_errno($ch);
         $curl_error = curl_error($ch);
+        $resu['data']['curl_errno'] = $curl_errno;
+        $resu['data']['curl_error'] = $curl_error;
         if (0 !== $curl_errno) {
             curl_close($ch);
             $resu['code'] = 3;
             $resu['msg'] = 'curl_exec error';
-            $resu['data']['curl_errno'] = $curl_errno;
-            $resu['data']['curl_error'] = $curl_error;
             return $resu;
         }
         $curl_info = curl_getinfo($ch);
@@ -508,7 +521,7 @@ class curlUtil
         }
         $headLine = $headArr = $cookies = array();
         if (self::$options['getHeader'] && self::$options['parseRespHead']) {
-                $headerLines = explode("\r\n", $head);
+            $headerLines = explode("\r\n", $head);
             foreach ($headerLines as $line) {
                 $line = trim($line);
                 if (strlen($line) > 0) {
@@ -576,5 +589,125 @@ class curlUtil
             return $url;
         }
         return ($url .= ( false === strpos($url, '?') ? '?' : '&' ) . $args);
+    }
+
+    /**
+     * curl_multi方法
+     * @param  Array $configs
+     *     array(
+     *         0 => array(
+     *             'url' => '',
+     *             'args' => array(), // post 或 get 的参数 缺省arrar() eg. 'a=b&c=d' or array('a'=>b,'c'=>'d',..)
+     *             'opts' => array(), // Array 设置的选项参数 参看 setOptions 方法的参数值结构
+     *         ),
+     *        ...
+     *     )
+     * @return Array
+     *     array(
+     *         0 => array(
+     *             'code' => 0,
+     *             'msg' => 'succ',
+     *             'data' => array(
+     *                 'response' => array(),
+     *                 'http_code' => 200,
+     *                 'curl_errno' => 0,
+     *                 'curl_error' => '',
+     *                 'curl_info' => array(
+     *                     'url' => '',
+     *                     'content_type' => '',
+     *                     'http_code' => 200,
+     *                     ...
+     *                 ),
+     *             ),
+     *         ),
+     *         ...
+     *     )
+     */
+    public function multi($configs) {
+
+        $resu = $chArr = $opts = array();
+
+        foreach ($configs as $k => $cfg) {
+            if (false !== ($chArr[$k] = curl_init())) {
+                $opts[$k] = self::curlSetopt($chArr[$k], $cfg['url'], $cfg['args'], $cfg['opts']);
+            }
+            $resu[$k] = array(
+                'code' => 0,
+                'msg' => 'succ',
+                'data' => array(
+                    'response' => array(),
+                    'http_code' => 0,
+                    'curl_errno' => 0,
+                    'curl_error' => '',
+                    'curl_info' => array(),
+                ),
+            );
+        }
+
+        $mh = curl_multi_init(); // 1 创建批处理cURL句柄
+
+        foreach ($chArr as $k => $ch) {
+            if ($ch !== false) {
+                curl_multi_add_handle($mh, $ch); // 2 增加句柄
+            }
+        }
+
+        $active = null;
+        do {
+            while (($mrc = curl_multi_exec($mh, $active)) == CURLM_CALL_MULTI_PERFORM);
+
+            if ($mrc != CURLM_OK) {
+                break;
+            }
+
+            // a request was just completed -- find out which one
+            while ($done = curl_multi_info_read($mh)) {
+                $idx = null;
+                foreach ($chArr as $k => $ch) {
+                    if ($done['handle'] === $ch) {
+                        $idx = $k;
+                        break;
+                    }
+                }
+                // get the info and content returned on the request
+                $curl_errno = curl_errno($done['handle']);
+                $curl_error = curl_error($done['handle']);
+                $resu[$idx]['data']['curl_errno'] = $curl_errno;
+                $resu[$idx]['data']['curl_error'] = $curl_error;
+                if (0 !== $curl_errno) {
+                    $resu[$idx]['code'] = 3;
+                    $resu[$idx]['msg'] = 'curl_exec error';
+                    $resu[$idx]['data']['response'] = array();
+                } else {
+                    $curl_info = curl_getinfo($done['handle']);
+                    $resu[$idx]['data']['http_code'] = $curl_info['http_code'];
+                    $resu[$idx]['data']['curl_info'] = $curl_info;
+                    $response = curl_multi_getcontent($done['handle']);
+                    $resu[$idx]['data']['response'] = self::parseResponse($response);
+                }
+                // remove the curl handle that just completed
+                curl_multi_remove_handle($mh, $done['handle']);
+                curl_close($done['handle']);
+                unset($chArr[$idx]);
+            }
+
+            // Block for data in / output; error handling is done by curl_multi_exec
+            if ($active > 0) {
+                curl_multi_select($mh);
+            }
+
+        } while ($active);
+        curl_multi_close($mh); // close all handle
+
+        if (count($chArr) > 0) { // curl_init 失败的在这里
+            foreach ($chArr as $k=> $ch) {
+                $resu[$k] = array_replace_recursive($resu[$k], array(
+                    'code' => 1,
+                    'msg' => 'curl_init fail',
+                ));
+            }
+        }
+
+        return $resu;
     }
 }
