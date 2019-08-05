@@ -79,13 +79,14 @@ class redisUtil
         if ($config === null) {
             $config = $this->conf;
         }
+        $config['timeout'] = isset($config['timeout']) ? $config['timeout'] : 0;
         $config['pconnect'] = isset($config['pconnect']) ? $config['pconnect'] : 0;
         if ($config['pconnect']) {
-            if ($this->redis->pconnect($config['host'], $config['port']) === false) {
+            if ($this->redis->pconnect($config['host'], $config['port'], $config['timeout']) === false) {
                 return false;
             }
         } else {
-            if ($this->redis->connect($config['host'], $config['port']) === false) {
+            if ($this->redis->connect($config['host'], $config['port'], $config['timeout']) === false) {
                 return false;
             }
         }
