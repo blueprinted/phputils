@@ -422,4 +422,25 @@ class redisUtil
     {
         return $this->redis ? $this->redis->subscribe($channels, $callback) : false;
     }
+    
+    public function hSet($key, $field, $value) {
+        // LONG 1 if value didn't exist and was added successfully, 0 if the value was already present and was replaced, FALSE if there was an error.
+        return $this->redis ? $this->redis->hSet($key, $field, $value) : false;
+    }
+    public function hGet($key, $field) {
+        // STRING The value, if the command executed successfully BOOL FALSE in case of failure
+        return $this->redis ? $this->redis->hGet($key, $field) : false;
+    }
+    public function hKeys($key) {
+        // An array of elements, the keys of the hash. This works like PHP's array_keys().
+        return $this->redis ? $this->redis->hKeys($key) : array();
+    }
+    public function hExists($key, $field) {
+        // BOOL: If the member exists in the hash table, return TRUE, otherwise return FALSE.
+        return $this->redis ? $this->redis->hExists($key, $field) : false;
+    }
+    public function hIncrBy($key, $field, $step = 1) {
+        // LONG the new value
+        return $this->redis ? $this->redis->hIncrBy($key, $field, $step) : 0;
+    }
 }
