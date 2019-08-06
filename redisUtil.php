@@ -444,4 +444,38 @@ class redisUtil
         // LONG the new value
         return $this->redis ? $this->redis->hIncrBy($key, $field, $step) : 0;
     }
+    
+    public function zAdd($key, $score, $value) {
+        // Return value Long 1 if the element is added. 0 otherwise. 只有当增加了才返回1 其他都返回0 不增加但值被更新也返回0
+        return $this->redis ? $this->redis->zAdd($key, $score, $value) : 0;
+    }
+    public function zCard($key) {
+        // Return value Long, the set's cardinality
+        return $this->redis ? $this->redis->zCard($key) : 0;
+    }
+    public function zCount($key, $start, $end) {
+        // Return value LONG the size of a corresponding zRangeByScore.
+        return $this->redis ? $this->redis->zCount($key, $start, $end) : 0;
+    }
+    public function zRank($key, $member) {
+        // Return value Long, the item's score. 返回的是排序值从0开始 key不存在或成员不存在返回false
+        return $this->redis ? $this->redis->zRank($key, $member) : false;
+    }
+    public function zRevRank($key, $member) {
+        // Return value Long, the item's score. 返回的是排序值从0开始 key不存在或成员不存在返回false
+        return $this->redis ? $this->redis->zRevRank($key, $member) : false;
+    }
+    public function zIncrBy($key, $deltaScore, $member) {
+        // Return value DOUBLE the new value 返回更新后的值 如果key不存在或member不存在则初始为0并返回自增后的值
+        return $this->redis ? $this->redis->zIncrBy($key, $deltaScore, $member) : false;
+    }
+
+    /**
+     * @param $start Integer 起始偏移量
+     * @param $end Integer 结束偏移量
+     */
+    public function zRange($key, $start, $end, $withscores = false) {
+        // Return value Array containing the values in specified range.
+        return $this->redis ? $this->redis->zRange($key, $start, $end, $withscores) : array();
+    }
 }
