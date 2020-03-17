@@ -71,12 +71,12 @@ class mysqliUtil
                 $halt && $this->halt('Can not connect to MySQL server');
             }
         }
-        if ($dbname) {
+        if ($this->link && $dbname) {
             if (mysqli_select_db($this->link, $dbname)) {
                 $this->dbname = $dbname;
             }
         }
-        if ($charset) {
+        if ($this->link && $charset) {
             mysqli_query($this->link, "SET NAMES {$charset}");
         }
         return $this->link;
