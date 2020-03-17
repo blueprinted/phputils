@@ -59,8 +59,8 @@ class mysqliUtil
         $dbpass = $config['pass'];
         $dbname = isset($config['dbname']) ? $config['dbname'] : '';
         $charset = isset($config['charset']) ? $config['charset'] : 'utf8';
-        $pconnect = isset($config['pconnect']) ? $this->config['pconnect'] : 0;
-        $halt = isset($this->config['halt']) ? $this->config['halt'] : !0;
+        $pconnect = isset($config['pconnect']) ? $config['pconnect'] : 0;
+        $halt = isset($config['halt']) ? $config['halt'] : !0;
 
         if ($pconnect) {
             if (!$this->link = mysqli_pconnect($dbhost, $dbuser, $dbpass)) {
