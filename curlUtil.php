@@ -623,7 +623,7 @@ class curlUtil
      *         ...
      *     )
      */
-    public function multi($configs) {
+    public static function multi($configs) {
 
         $resu = $chArr = $opts = array();
 
