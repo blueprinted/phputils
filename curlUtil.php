@@ -247,7 +247,7 @@ class curlUtil
      *      )
      * @return Array
      */
-    private static function setOptions($options = array())
+    public static function setOptions($options = array())
     {
         if (empty(self::$options)) {
             self::$options = self::$defaultOpts;
