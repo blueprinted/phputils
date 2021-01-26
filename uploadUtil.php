@@ -8,8 +8,17 @@ define('UPLOADUTIL_DATA_ROOT', '/tmp');
 class uploadUtil
 {
     private static $instance = null;
-    protected static $options = array(); //当前选项
-    protected static $defaultOpts = array(); //缺省选项
+    protected static $options = array(); // 当前选项
+    protected static $defaultOpts = array( // 缺省选项
+        'rootDir' => UPLOADUTIL_DATA_ROOT, //文件上传保存的根目录 结尾需不带 /
+        'prefixDir' => '',//文件上传的保存路径（相对于设定的rootDir）结尾需不带 / 可以留空
+        'saveName' => '',//上传文件的文件名（带后缀）保存规则，如果留空则上传的文件名不变
+        'replace' => false,//存在同名文件是否是覆盖，默认为false
+        'maxSize' => 2 * 1024 * 1024,//允许上传的最大文件大小 byte
+        'exts' => array(),//允许上传的文件后缀（留空为不限制），使用数组或者逗号分隔的字符串设置，默认为空
+        'mimes' => array(),//允许上传的文件mime类型（留空为不限制），使用数组或者逗号分隔的字符串设置，默认为空
+        'hash' => false,//是否生成文件的hash编码 默认为true
+    );
 
     public function __construct($options = array())
     {
@@ -37,16 +46,6 @@ class uploadUtil
      */
     private static function setOptions($options = array())
     {
-        self::$defaultOpts = array(
-            'rootDir' => UPLOADUTIL_DATA_ROOT, //文件上传保存的根目录 结尾需不带 /
-            'prefixDir' => '',//文件上传的保存路径（相对于设定的rootDir）结尾需不带 / 可以留空
-            'saveName' => '',//上传文件的文件名（带后缀）保存规则，如果留空则上传的文件名不变
-            'replace' => false,//存在同名文件是否是覆盖，默认为false
-            'maxSize' => 2 * 1024 * 1024,//允许上传的最大文件大小 byte
-            'exts' => array(),//允许上传的文件后缀（留空为不限制），使用数组或者逗号分隔的字符串设置，默认为空
-            'mimes' => array(),//允许上传的文件mime类型（留空为不限制），使用数组或者逗号分隔的字符串设置，默认为空
-            'hash' => false,//是否生成文件的hash编码 默认为true
-        );
         self::$options = array_replace(self::$defaultOpts, self::$options, $options);
         return self::$options;
     }
@@ -256,7 +255,7 @@ class uploadUtil
     {
         $file_dir = trim($root_dir) === '' ? UPLOADUTIL_DATA_ROOT : $root_dir;
         $file_dir .= (substr($file_dir, -1) == '/' ? '' : '/') . $prefix_dir;
-        $file_dir .= (substr($file_dir, -1) == '/' ? '' : '/') . date('Ym') . '/' . date('d') ;
+        $file_dir .= (substr($file_dir, -1) == '/' ? '' : '/') . date('Ym') . '/' . date('Ymd') ;
         return $file_dir;
     }
 
