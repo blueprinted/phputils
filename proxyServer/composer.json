@@ -1,0 +1,6 @@
+{
+    "name": "endloop/proxy-server",
+    "require": {
+        "monolog/monolog": "^2.2"
+    }
+}
