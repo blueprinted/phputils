@@ -447,7 +447,7 @@ class curlUtil
      *          ),
      *      )
      */
-    private static function request($url, $args, $opts = array())
+    public static function request($url, $args, $opts = array())
     {
         $resu = array(
             'code' => 0,
@@ -506,7 +506,7 @@ class curlUtil
      *            'body' => '',
      *        )
      */
-    private static function parseResponse($response)
+    public static function parseResponse($response)
     {
         if (self::$options['getHeader']) {
             $head = self::getResponseHeader($response);
