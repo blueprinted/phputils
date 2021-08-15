@@ -86,9 +86,8 @@ class mysqliUtil
 	public function reconnect() {
 		if ($this->link) {
 			$this->close();
-			return $this->init_connect();
 		}
-		return null;
+		return $this->init_connect();
 	}
 
     public function init_connect()
