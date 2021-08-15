@@ -83,12 +83,12 @@ class mysqliUtil
     }
 
     //mysqli重连 返回连接标识
-	public function reconnect() {
-		if ($this->link) {
-			$this->close();
-		}
-		return $this->init_connect();
-	}
+    public function reconnect() {
+        if ($this->link) {
+            $this->close();
+        }
+        return $this->init_connect();
+    }
 
     public function init_connect()
     {
