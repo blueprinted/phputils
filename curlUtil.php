@@ -506,7 +506,7 @@ class curlUtil
      *            'body' => '',
      *        )
      */
-    public static function parseResponse($response)
+    private static function parseResponse($response)
     {
         if (self::$options['getHeader']) {
             $head = self::getResponseHeader($response);
@@ -525,8 +525,9 @@ class curlUtil
             foreach ($headerLines as $line) {
                 $line = trim($line);
                 if (strlen($line) > 0) {
-                    if (false !== strpos($line, ':')) {
-                        list($k,$v) = explode(":", $line);
+                    if (false !== ($posit = strpos($line, ':'))) {
+                        $k = substr($line, 0, $posit);
+                        $v = substr($line, $posit + 1);
                         $k = trim($k);
                         $v = trim($v);
                         if ($k == 'Set-Cookie') {
