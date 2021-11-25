@@ -101,7 +101,7 @@ class mysqliUtil
 
     public function select_db($dbname)
     {
-        return $this->init_connect() ? (mysqli_select_db($dbname, $this->link)?(boolean)($this->dbname=$dbname):false) : false;
+        return $this->init_connect() ? mysqli_select_db($this->link, $dbname) : false;
     }
 
     public function fetch_array($query, $result_type = MYSQLI_ASSOC)
