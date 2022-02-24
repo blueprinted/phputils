@@ -63,11 +63,11 @@ class mysqliUtil
         $halt = isset($config['halt']) ? $config['halt'] : !0;
 
         if ($pconnect) {
-            if (!$this->link = mysqli_pconnect($dbhost, $dbuser, $dbpass)) {
+            if (!$this->link = mysqli_pconnect($dbhost.':'.$dbport, $dbuser, $dbpass)) {
                 $halt && $this->halt('Can not connect to MySQL server');
             }
         } else {
-            if (!$this->link = mysqli_connect($dbhost, $dbuser, $dbpass)) {
+            if (!$this->link = mysqli_connect($dbhost.':'.$dbport, $dbuser, $dbpass)) {
                 $halt && $this->halt('Can not connect to MySQL server');
             }
         }
