@@ -52,31 +52,18 @@ class mysqliUtil
         if (!is_array($config)) {
             return false;
         }
-
         $dbhost = isset($config['host']) ? $config['host'] : 'localhost';
-        $dbport = isset($config['port']) ? $config['port'] : '3306';
+        $dbport = isset($config['port']) ? $config['port'] : '';
         $dbuser = $config['user'];
         $dbpass = $config['pass'];
         $dbname = isset($config['dbname']) ? $config['dbname'] : '';
         $charset = isset($config['charset']) ? $config['charset'] : 'utf8';
         $pconnect = isset($config['pconnect']) ? $config['pconnect'] : 0;
-        $halt = isset($config['halt']) ? $config['halt'] : !0;
-
-        if ($pconnect) {
-            if (!$this->link = mysqli_pconnect($dbhost.':'.$dbport, $dbuser, $dbpass)) {
-                $halt && $this->halt('Can not connect to MySQL server');
-            }
-        } else {
-            if (!$this->link = mysqli_connect($dbhost.':'.$dbport, $dbuser, $dbpass)) {
-                $halt && $this->halt('Can not connect to MySQL server');
-            }
+        $halt = isset($this->config['halt']) ? $config['halt'] : !0;
+        if (!$this->link = mysqli_connect(($pconnect ? 'p:' : '').$dbhost, $dbuser, $dbpass, $dbname, $dbport)) {
+            $halt && $this->halt('Can not connect to MySQL server');
         }
-        if ($this->link && $dbname) {
-            if (mysqli_select_db($this->link, $dbname)) {
-                $this->dbname = $dbname;
-            }
-        }
-        if ($this->link && $charset) {
+        if ($charset) {
             mysqli_query($this->link, "SET NAMES {$charset}");
         }
         return $this->link;
